@@ -7,6 +7,7 @@ import * as api from '../services/api.js';
 
 // No fallback arrays used
 export function initPatients() {
+    if (!api.isAuthenticated()) { window.location.replace('login.html'); return; }
     initializeSidebar();
     
     const refreshBtn = document.getElementById('refreshBtn');
@@ -22,9 +23,10 @@ export function initPatients() {
     }
 
     if (searchInput) {
+        let searchTimer;
         searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            // Search functionality can be hooked here
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => loadPatients(e.target.value.trim()), 250);
         });
     }
 
@@ -67,7 +69,7 @@ export function initPatients() {
                 closeModal('patientModal');
                 await loadPatients();
             } catch (error) {
-                showToast('error', 'Error', 'Failed to save patient. Please try again.');
+                showToast('error', 'Error', error.message || 'Failed to save patient. Please try again.');
             } finally {
                 toggleLoading(false);
             }
@@ -75,7 +77,7 @@ export function initPatients() {
     }
 }
 
-async function loadPatients() {
+async function loadPatients(query = '') {
     const patientTableBody = document.getElementById('patientTableBody');
     const tableContainer = document.getElementById('tableContainer');
     const emptyState = document.getElementById('emptyState');
@@ -83,15 +85,12 @@ async function loadPatients() {
     
     try {
         toggleLoading(true, 'Loading Patients...');
-        const patients = await api.getPatients();
+        const patients = query ? await api.searchPatients(query) : await api.getPatients();
         renderTable(patientTableBody, tableContainer, emptyState, patients, loadPatients, patientForm);
     } catch (error) {
-        tableContainer.style.display = 'none';
-        emptyState.style.display = 'block';
-        
-        if (!error.message || !error.message.includes('Implement')) {
-            showToast('error', 'Error', error.message || 'Failed to load patients.');
-        }
+        if (tableContainer) tableContainer.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'block';
+        showToast('error', 'Error', error.message || 'Failed to load patients.');
     } finally {
         toggleLoading(false);
     }

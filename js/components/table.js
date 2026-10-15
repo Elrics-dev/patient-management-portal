@@ -18,6 +18,7 @@ export function renderTable(patientTableBody, tableContainer, emptyState, curren
     tableContainer.style.display = 'block';
     emptyState.style.display = 'none';
 
+    const escapeHTML = value => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     currentPatients.forEach(patient => {
         const tr = document.createElement('tr');
         
@@ -27,18 +28,18 @@ export function renderTable(patientTableBody, tableContainer, emptyState, curren
         if (patient.status === 'Under Review') statusBadgeClass = 'badge-warning';
 
         tr.innerHTML = `
-            <td><span class="font-medium text-main">${patient.id}</span></td>
-            <td>${patient.name}</td>
-            <td>${patient.age}</td>
-            <td>${patient.gender}</td>
-            <td>${patient.phone}</td>
-            <td><span class="font-medium">${patient.bloodGroup}</span></td>
-            <td><span class="badge ${statusBadgeClass}">${patient.status}</span></td>
+            <td><span class="font-medium text-main">${escapeHTML(patient.id)}</span></td>
+            <td>${escapeHTML(patient.name)}</td>
+            <td>${escapeHTML(patient.age)}</td>
+            <td>${escapeHTML(patient.gender)}</td>
+            <td>${escapeHTML(patient.phone)}</td>
+            <td><span class="font-medium">${escapeHTML(patient.bloodGroup)}</span></td>
+            <td><span class="badge ${statusBadgeClass}">${escapeHTML(patient.status)}</span></td>
             <td>
                 <div class="flex gap-2">
-                    <button class="btn btn-secondary btn-sm action-view" data-id="${patient.id}" title="View">👁️</button>
-                    <button class="btn btn-secondary btn-sm action-edit" data-id="${patient.id}" title="Edit">✏️</button>
-                    <button class="btn btn-danger-outline btn-sm action-delete" data-id="${patient.id}" title="Delete">🗑️</button>
+                    <button class="btn btn-secondary btn-sm action-view" data-id="${escapeHTML(patient.id)}" title="View">👁️</button>
+                    <button class="btn btn-secondary btn-sm action-edit" data-id="${escapeHTML(patient.id)}" title="Edit">✏️</button>
+                    <button class="btn btn-danger-outline btn-sm action-delete" data-id="${escapeHTML(patient.id)}" title="Delete">🗑️</button>
                 </div>
             </td>
         `;
@@ -71,7 +72,7 @@ function attachTableActions(currentPatients, onPatientsUpdated, patientForm) {
             }
             idInput.value = id;
             
-            const patient = currentPatients.find(p => p.id === id);
+            const patient = currentPatients.find(p => String(p.id) === String(id));
             if (patient) {
                 const formElements = patientForm.elements;
                 if(formElements['fullName']) formElements['fullName'].value = patient.name;
@@ -99,7 +100,7 @@ function attachTableActions(currentPatients, onPatientsUpdated, patientForm) {
                         await onPatientsUpdated();
                     }
                 } catch (error) {
-                    showToast('error', 'Error', 'Failed to delete patient.');
+                    showToast('error', 'Error', error.message || 'Failed to delete patient.');
                 } finally {
                     toggleLoading(false);
                 }
