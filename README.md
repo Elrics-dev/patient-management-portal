@@ -1,75 +1,155 @@
 # ELRICS Patient Management Portal
+## Technical Assessment
 
-Full-stack patient management assessment: the original HTML/CSS/vanilla JavaScript frontend is retained and integrated with a Django REST Framework API.
+Welcome to the **ELRICS Patient Management Portal** technical assessment frontend repository. This project is a foundational UI for a modern SaaS healthcare application, designed for candidates to demonstrate their backend engineering and full-stack integration skills.
 
-## Stack
-- Frontend: HTML5, CSS3, vanilla JavaScript ES modules (no Node/npm required)
-- Backend: Python, Django, Django REST Framework
-- Database: SQLite for a zero-configuration local assessment setup
-- Authentication: JWT access/refresh tokens via Simple JWT
+## Project Overview
 
-## Features
-- Initial administrator registration (public registration closes after the first account is created)
-- JWT login and protected patient endpoints
-- Patient list, search by ID/name/phone/email, create, edit, view-ready detail API, and delete
-- Server-side validation and useful API error messages
-- CORS configuration for local frontend development
+This repository contains the complete frontend UI for a Patient Management Dashboard. It has been built using HTML5, CSS3, and Vanilla JavaScript (ES6) without any modern frameworks or build tools to ensure maximum compatibility and simplicity.
 
-## Requirements
-- Python 3.10+
-- A modern browser
+The frontend is fully designed and includes layout, styling, and basic DOM interactions (e.g., modals, form validation, toast notifications, loading states). 
 
-## Run locally
-Open two terminals from the repository root.
+However, **there is no backend implementation**. 
 
-### 1. Backend
-```bash
-cd backend
-python -m venv .venv
-# Windows PowerShell:
-.venv\\Scripts\\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-copy .env.example .env  # Windows; on macOS/Linux use: cp .env.example .env
-python manage.py makemigrations patients
-python manage.py migrate
-python manage.py runserver 8000
+Your objective is to complete the application by implementing the required backend services and integrating them with the provided frontend while preserving the existing user interface.
+
+## Time Available
+
+**30 Minutes**
+
+## Folder Structure
+
+```
+.
+├── README.md
+├── .gitignore
+├── login.html
+├── register.html
+├── dashboard.html
+├── patients.html
+├── assets/
+│   ├── logo.svg
+│   ├── avatar.png
+│   └── icons/
+├── css/
+│   ├── styles.css
+│   ├── layout.css
+│   ├── components.css
+│   └── responsive.css
+└── js/
+    ├── app.js
+    ├── services/
+    │   └── api.js
+    ├── pages/
+    │   ├── login.js
+    │   ├── register.js
+    │   ├── dashboard.js
+    │   └── patients.js
+    ├── components/
+    │   ├── modal.js
+    │   ├── table.js
+    │   ├── toast.js
+    │   ├── loader.js
+    │   └── sidebar.js
+    └── utils/
+        ├── helpers.js
+        ├── validation.js
+        └── constants.js
 ```
 
-The API will be available at `http://127.0.0.1:8000/api/`.
+## Setup Instructions
 
-### 2. Frontend
-From the repository root, serve the static files. For example:
-```bash
-python -m http.server 5500
-```
-Open `http://127.0.0.1:5500/login.html`. You can also use VS Code Live Server. The default API URL is `http://127.0.0.1:8000/api`; to override it, set `window.ELRICS_API_URL` before `js/app.js` loads.
+Since this is a static frontend project, there are no dependencies to install (no Node.js, no npm required).
 
-### 3. First use
-1. Open `register.html` and create the first administrator.
-2. Log in through `login.html`.
-3. Use Patients to create and manage records.
+1. Clone or download this repository.
+2. Open the `patient-management` directory.
+3. Serve the HTML files using a static web server.
+    - Example using VS Code: Install the **Live Server** extension and click "Go Live" on `login.html`.
+    - Example using Python: Run `python -m http.server 8000` in the directory and navigate to `http://localhost:8000`.
 
-## API endpoints
-| Method | Endpoint | Access | Purpose |
-|---|---|---|---|
-| POST | `/api/auth/register/` | Public, first account only | Create initial admin |
-| POST | `/api/auth/login/` | Public | Get JWT access/refresh tokens |
-| POST | `/api/auth/refresh/` | Refresh token | Refresh access token |
-| GET | `/api/auth/me/` | Authenticated admin | Current account |
-| GET, POST | `/api/patients/` | Authenticated admin | List/search or create |
-| GET, PATCH, PUT, DELETE | `/api/patients/<id>/` | Authenticated admin | Read/update/delete |
+## Business Requirements
 
-Send `Authorization: Bearer <access_token>` for protected endpoints. Search example: `/api/patients/?search=smith`.
+The hospital requires a secure Patient Management Portal. Authorized administrators should be able to:
 
-## Data model and assumptions
-- Each patient has name, age, gender, phone, optional email/address/emergency contact, blood group, status, and timestamps.
-- SQLite is chosen for a fast local assessment. Django migrations create the schema; switch the database settings for a production deployment.
-- Public registration is intentionally restricted to the first administrator to prevent anonymous users from creating privileged accounts. Additional account provisioning should be performed by a trusted administrator.
-- Access tokens expire after 30 minutes; refresh tokens expire after one day.
-- This is an assessment implementation, not a production-certified system for real patient/PHI data. Production use requires HTTPS, secret management, audit logs, backups, stricter operational controls, and a privacy/security review.
+1. **Register** to create an initial administrator account.
+2. **Log in** to access the dashboard.
+3. **View patient records** with relevant medical details.
+3. **Register new patients** capturing essential data.
+4. **Update patient information** when circumstances change.
+5. **Delete patient records** from the system.
+6. **Search patients** quickly.
 
-## Troubleshooting
-- If the browser reports a CORS error, open the frontend from `localhost`/`127.0.0.1` and add its exact origin to `CORS_ALLOWED_ORIGINS` in `backend/.env`.
-- If API requests fail to connect, make sure Django is running on port 8000.
-- If you need to reset the local assessment database, stop Django and remove `backend/db.sqlite3`, then rerun migrations. This deletes all local accounts and patient records.
+## Functional Requirements
+
+At a minimum, the completed application should support:
+- User authentication
+- Patient registration
+- Viewing patient records
+- Editing patient details
+- Deleting patient records
+- Searching patients
+- Appropriate validation
+- Appropriate error handling
+
+## Backend Integration
+
+Your backend will run separately from the provided frontend.
+
+Ensure that your frontend is able to communicate successfully with your backend during development.
+
+You are responsible for configuring your application appropriately so that both components function together in your local development environment.
+
+## Submission Guidelines
+
+1. You must integrate this exact frontend with your custom backend.
+2. The backend must be implemented using Python, Django, and Django REST Framework.
+3. Integrate the provided frontend with your backend implementation while maintaining the existing project structure.
+
+## Deliverables
+
+Submit:
+- Source code
+- Git repository
+- README with setup instructions
+- Database migration files
+- Environment configuration template (`.env.example` if applicable)
+
+## Assumptions
+
+You may make reasonable assumptions where requirements are not explicitly defined. Document any assumptions in your README.
+
+## General Rules & Expectations
+
+- **Do not modify the overall UI/UX design.** You may add subtle improvements if necessary, but the core aesthetic must remain the same.
+- **Complete the application according to the business requirements.** Connect the provided frontend functions to your newly created backend.
+- **Initial Administrator:** The application should support creation of the initial administrator account before authentication.
+- **Data Persistence:** Ensure that users and patients are properly stored.
+- **Authentication:** Secure the application so unauthorized access is rejected.
+- **Git Workflow:** Maintain a clean commit history. Use meaningful commit messages that reflect logical development milestones. The repository history may be reviewed during evaluation.
+
+## External Resources
+
+You may use:
+- Official documentation
+- Search engines
+- AI coding assistants
+- Personal notes
+
+However, you must be able to explain every technical decision during the technical discussion.
+
+## Evaluation Criteria
+
+Your submission will be evaluated on:
+- Code quality
+- Project structure
+- Problem solving
+- Maintainability
+- Backend integration
+- Error handling
+- Data validation
+- Security considerations
+- API design
+- User experience
+- Ability to explain technical decisions
+
+Best of luck!
